@@ -28,6 +28,10 @@ void call(app_env = [:]) {
                     libStepConfig?.artifacts ?:
                     [] as String[]
 
+    def stashOptions = appStepConfig?.stashOptions ?:
+                    libStepConfig?.stashOptions ?:
+                    [] as String[]
+
     // Gather and set non-secret environment variables
     this.setEnvVars(libStepConfig, appStepConfig)
 
@@ -55,10 +59,31 @@ void call(app_env = [:]) {
                     artifacts.each { artifact ->
                         archiveArtifacts artifacts: artifact, allowEmptyArchive: true
                     }
+
+                    stash(stashOptions)
                 }
             }
         }
     }
+}
+
+/**
+ * Method executed if there are stash options specified.
+ * Will build the 'stash' command and execute it, throwing any exceptions that occur. 
+ * 
+ * @param stashOptions the stash options specified with the pipeline configuration.
+ */
+void stash(stashOptions) {
+    if(stashOptions) {
+        String options = stashOptions.join(',')
+
+        try {
+            stash options
+        }
+        catch (any) {
+            throw any
+        }
+    } 
 }
 
 void validateSecrets(secrets) {
