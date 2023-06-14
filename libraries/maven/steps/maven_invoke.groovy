@@ -69,21 +69,26 @@ void call(app_env = [:]) {
 
 /**
  * Method executed if there are stash options specified.
- * Will build the 'stash' command and execute it, throwing any exceptions that occur. 
+ * Will build the 'stash' command and execute it, throwing any exceptions that occur.
+ * The name field is required if any options are used and must be set to workspaceName
+ * due to 'name' being a reserved word.  The other options and default values are set 
+ * based on the Jenkins 'stash' documentation.
  * 
- * @param stashOptions the stash options specified with the pipeline configuration.
+ * @param stashOptions the stash options specified in the pipeline configuration.
  */
 void runStashCommand(stashOptions) {
     if(stashOptions) {
         try {
             def workspaceName = stashOptions.workspaceName
             def allowEmpty = stashOptions.allowEmpty ?: false
-            def excludes = ''
-            def includes = ''
-            def useDefaultExcludes = true
-            
-            println "Executing command [stash name: ${stashOptions.workspaceName} , allowEmpty: ${allowEmpty}]" 
-            stash name: stashOptions.workspaceName , allowEmpty: allowEmpty 
+            def excludes = stashOptions.excludes ?: ''
+            def includes = stashOptions.includes ?: ''
+            def useDefaultExcludes = stashOptions.includes ?: true
+
+            println "Executing command [stash name: ${stashOptions.workspaceName}, allowEmpty: ${allowEmpty}, "
+                + "excludes: ${excludes}, includes: ${includes}, useDefaultExcludes: ${useDefaultExcludes}]" 
+            stash name: stashOptions.workspaceName, allowEmpty: allowEmpty, excludes: excludes, 
+                includes: includes, useDefaultExcludes: useDefaultExcludes
         }
         catch (any) {
             throw any
