@@ -60,7 +60,7 @@ void call(app_env = [:]) {
                         archiveArtifacts artifacts: artifact, allowEmptyArchive: true
                     }
 
-                    stash(stashOptions)
+                    runStashCommand(stashOptions)
                 }
             }
         }
@@ -73,7 +73,7 @@ void call(app_env = [:]) {
  * 
  * @param stashOptions the stash options specified with the pipeline configuration.
  */
-void stash(stashOptions) {
+void runStashCommand(stashOptions) {
     if(stashOptions) {
         String options = stashOptions.join(',')
 
