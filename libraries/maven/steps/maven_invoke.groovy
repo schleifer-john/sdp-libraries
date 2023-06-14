@@ -78,6 +78,7 @@ void stash(stashOptions) {
         String options = stashOptions.join(',')
 
         try {
+            println "Executing stash command with options ${options}" 
             stash options
         }
         catch (any) {
