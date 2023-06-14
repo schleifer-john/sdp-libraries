@@ -81,6 +81,7 @@ void runStashCommand(stashOptions) {
             def excludes = ''
             def includes = ''
             def useDefaultExcludes = true
+            
             println "Executing command [stash name: ${stashOptions.name} , allowEmpty: ${allowEmpty}]" 
             stash name: stashOptions.name , allowEmpty: allowEmpty 
         }
