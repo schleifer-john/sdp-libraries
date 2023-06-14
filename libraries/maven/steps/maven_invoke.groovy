@@ -76,14 +76,14 @@ void call(app_env = [:]) {
 void runStashCommand(stashOptions) {
     if(stashOptions) {
         try {
-            def name = stashOptions.name
+            def workspaceName = stashOptions.workspaceName
             def allowEmpty = stashOptions.allowEmpty ?: false
             def excludes = ''
             def includes = ''
             def useDefaultExcludes = true
             
-            println "Executing command [stash name: ${stashOptions.name} , allowEmpty: ${allowEmpty}]" 
-            stash name: stashOptions.name , allowEmpty: allowEmpty 
+            println "Executing command [stash name: ${stashOptions.workspaceName} , allowEmpty: ${allowEmpty}]" 
+            stash name: stashOptions.workspaceName , allowEmpty: allowEmpty 
         }
         catch (any) {
             throw any
