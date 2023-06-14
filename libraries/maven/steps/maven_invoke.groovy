@@ -83,7 +83,7 @@ void runStashCommand(stashOptions) {
             def allowEmpty = stashOptions.allowEmpty ?: false
             def excludes = stashOptions.excludes ?: ''
             def includes = stashOptions.includes ?: ''
-            def useDefaultExcludes = stashOptions.includes ?: true
+            def useDefaultExcludes = stashOptions.useDefaultExcludes ?: true
 
             println "Executing command [stash name: ${stashOptions.workspaceName}, allowEmpty: ${allowEmpty}, "
                 + "excludes: ${excludes}, includes: ${includes}, useDefaultExcludes: ${useDefaultExcludes}]" 
