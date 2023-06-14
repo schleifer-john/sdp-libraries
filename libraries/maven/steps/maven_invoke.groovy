@@ -93,7 +93,7 @@ void runStashCommand(stashOptions) {
         catch (any) {
             throw any
         }
-    } 
+    }
 }
 
 void validateSecrets(secrets) {
@@ -161,6 +161,12 @@ void setEnvVars(libStepConfig, appStepConfig) {
             missingRequired += "Missing required configuration option: ${field} for step: ${stepContext.name}\n"
         }
     }
+
+    // Check that the workspaceName is specified if stashOptions are used
+    if(envVars.containsKey('stashOptions') && !envVars.stashOptions.containsKey('workspaceName')) {
+        missingRequired += "Missing required configuration option: stashOptions.workspaceName for step: ${stepContext.name}\n"
+    }
+
     if (missingRequired) {
         error missingRequired
     }
