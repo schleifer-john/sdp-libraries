@@ -85,10 +85,10 @@ void runStashCommand(stashOptions) {
             def includes = stashOptions.includes ?: ''
             def useDefaultExcludes = stashOptions.useDefaultExcludes ?: true
 
-            println "Executing command [stash name: ${stashOptions.workspaceName}, allowEmpty: ${allowEmpty}, "
-                + "excludes: ${excludes}, includes: ${includes}, useDefaultExcludes: ${useDefaultExcludes}]" 
-            stash name: stashOptions.workspaceName, allowEmpty: allowEmpty, excludes: excludes, 
-                includes: includes, useDefaultExcludes: useDefaultExcludes
+            println ("Executing command [stash name: ${stashOptions.workspaceName}, allowEmpty: ${allowEmpty}, excludes: ${excludes}, "
+                + "includes: ${includes}, useDefaultExcludes: ${useDefaultExcludes}]")
+            stash (name: stashOptions.workspaceName, allowEmpty: allowEmpty, excludes: excludes, includes: includes, 
+                useDefaultExcludes: useDefaultExcludes)
         }
         catch (any) {
             throw any
