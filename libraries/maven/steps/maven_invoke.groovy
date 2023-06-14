@@ -79,7 +79,7 @@ void runStashCommand(stashOptions) {
 
         try {
             println "Executing stash command with options ${options}" 
-            stash options
+            stash "${options}"
         }
         catch (any) {
             throw any
