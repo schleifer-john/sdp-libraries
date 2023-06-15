@@ -95,21 +95,19 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
     def 'Stash command runs with correct required and default values when minimal stashOptions are specified' () {
         setup:
             MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
-        when:
-            MavenInvoke([
-                maven: [
-                    build: [
-                        stageName: 'Maven Build',
-                        buildContainer: 'mvn',
-                        phases: ['clean', 'install'],
-                        stashOptions: [
-                            stashName: 'test-stash'
-                        ]
+            MavenInvoke.getBinding().setVariable('config', [
+                build: [
+                    stageName: 'Maven Build',
+                    buildContainer: 'mvn',
+                    phases: ['clean', 'install'],
+                    stashOptions: [
+                        stashName: 'test-stash'
                     ]
                 ]
-            ])
+            ])            
+        when:
+            MavenInvoke()
         then:
-            println "arguments"
             1 * getPipelineMock('stash')(_) >> { args ->
                 assert 'test-stash' == args[0].name
                 assert false == args[0].allowEmpty
@@ -122,31 +120,65 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
     def 'Stash command runs when stashOptions are specified' () {
         setup:
             MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
-        when:
-            MavenInvoke([
-                maven: [
-                    build: [
-                        stageName: 'Maven Build',
-                        buildContainer: 'mvn',
-                        phases: ['clean', 'install'],
-                        stashOptions: [
-                            stashName: 'test-stash',
-                            allowEmpty: true,
-                            excludes: 'src/test',
-                            includes: 'src/main',
-                            useDefaultExcludes: false
-                        ]
+            MavenInvoke.getBinding().setVariable('config', [
+               build: [
+                    stageName: 'Maven Build',
+                    buildContainer: 'mvn',
+                    phases: ['clean', 'install'],
+                    stashOptions: [
+                        stashName: 'test-stash',
+                        allowEmpty: true,
+                        excludes: 'src/test',
+                        includes: 'src/main',
+                        useDefaultExcludes: false
                     ]
                 ]
-            ])
+            ])            
+        when:
+            MavenInvoke()
         then:
-            println "arguments"
             1 * getPipelineMock('stash')(_) >> { args ->
                 assert 'test-stash' == args[0].name
                 assert true == args[0].allowEmpty
                 assert 'src/test' == args[0].excludes
                 assert 'src/main' == args[0].includes
                 assert false == args[0].useDefaultExcludes
+            }
+    }
+
+    def 'Verify validation check works if required fields are missing' () {
+        setup:
+            MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
+            MavenInvoke.getBinding().setVariable('config', [
+                build: [:]
+            ])
+        when:
+            MavenInvoke()
+        then:
+            1 * getPipelineMock('error')(_) >> { args ->
+                def lines = args[0].split('\n')
+                assert 'Missing required configuration option: stageName for step: build' == lines[0]
+                assert 'Missing required configuration option: buildContainer for step: build' == lines[1]
+            }
+    }      
+
+    def 'Verify validation check works if stashOptions is missing the required stashName' () {
+        setup:
+            MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
+            MavenInvoke.getBinding().setVariable('config', [
+                build: [
+                    stageName: 'Maven Build',
+                    buildContainer: 'mvn',
+                    phases: ['clean', 'install'],
+                    stashOptions: [:]
+                ]
+            ])
+        when:
+            MavenInvoke()
+        then:
+            1 * getPipelineMock('error')(_) >> { args ->
+                def lines = args[0].split('\n')
+                assert 'Missing required configuration option: stashOptions.stashName for step: build' == lines[0]
             }
     }    
 }

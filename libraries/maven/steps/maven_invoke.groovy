@@ -83,7 +83,7 @@ void runStashCommand(stashOptions) {
             def excludes = stashOptions.excludes ?: ''
             def includes = stashOptions.includes ?: ''
 
-            // Need to use containsKey checks for the boolean values
+            // Need to use containsKey checks for the default boolean values
             def allowEmpty = stashOptions.containsKey('allowEmpty') ? stashOptions.allowEmpty : false
             def useDefaultExcludes = stashOptions.containsKey('useDefaultExcludes') ? stashOptions.useDefaultExcludes : true
 
@@ -151,10 +151,8 @@ void setEnvVars(libStepConfig, appStepConfig) {
     LinkedHashMap appEnv = appStepConfig?.findAll { it.key != 'secrets' } ?: [:]
     LinkedHashMap envVars = libEnv + appEnv
 
-    println "envVars"
     envVars.each {
         env[it.key] = it.value
-        println "$it.key: $it.value"
     }
 
     // Checking to make sure required fields are present (may be redundant once a library_config.groovy is added)
