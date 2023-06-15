@@ -101,7 +101,7 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
                     buildContainer: 'mvn',
                     phases: ['clean', 'install'],
                     stashOptions: [
-                        stashName: 'test-stash'
+                        name: 'test-stash'
                     ]
                 ]
             ])            
@@ -126,7 +126,7 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
                     buildContainer: 'mvn',
                     phases: ['clean', 'install'],
                     stashOptions: [
-                        stashName: 'test-stash',
+                        name: 'test-stash',
                         allowEmpty: true,
                         excludes: 'src/test',
                         includes: 'src/main',
@@ -163,7 +163,7 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
             }
     }      
 
-    def 'Verify validation check works if stashOptions is missing the required stashName' () {
+    def 'Verify validation check works if stashOptions is missing the required name' () {
         setup:
             MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
             MavenInvoke.getBinding().setVariable('config', [
@@ -180,7 +180,7 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
             1 * getPipelineMock('error')(_) >> { args ->
                 def lines = args[0].split('\n')
                 assert 1 == lines.size()
-                assert 'Missing required configuration option: stashOptions.stashName for step: build' == lines[0]
+                assert 'Missing required configuration option: stashOptions.name for step: build' == lines[0]
             }
     }    
 }

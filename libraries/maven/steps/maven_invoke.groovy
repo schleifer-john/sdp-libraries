@@ -79,7 +79,7 @@ void call(app_env = [:]) {
 void runStashCommand(stashOptions) {
     if(stashOptions) {
         try {
-            def stashName = stashOptions.stashName
+            // set default values for optional values
             def excludes = stashOptions.excludes ?: ''
             def includes = stashOptions.includes ?: ''
 
@@ -87,9 +87,9 @@ void runStashCommand(stashOptions) {
             def allowEmpty = stashOptions.containsKey('allowEmpty') ? stashOptions.allowEmpty : false
             def useDefaultExcludes = stashOptions.containsKey('useDefaultExcludes') ? stashOptions.useDefaultExcludes : true
 
-            println ("Executing command [stash name: ${stashOptions.stashName}, allowEmpty: ${allowEmpty}, excludes: ${excludes}, "
+            println ("Executing command [stash name: ${stashOptions.name}, allowEmpty: ${allowEmpty}, excludes: ${excludes}, "
                 + "includes: ${includes}, useDefaultExcludes: ${useDefaultExcludes}]")
-            stash (name: stashName, allowEmpty: allowEmpty, excludes: excludes, includes: includes, 
+            stash (name: stashOptions.name, allowEmpty: allowEmpty, excludes: excludes, includes: includes, 
                 useDefaultExcludes: useDefaultExcludes)
         }
         catch (any) {
@@ -164,9 +164,9 @@ void setEnvVars(libStepConfig, appStepConfig) {
         }
     }
 
-    // Check that the stashName is specified if stashOptions are used
-    if(envVars.containsKey('stashOptions') && !envVars.stashOptions.containsKey('stashName')) {
-        missingRequired += "Missing required configuration option: stashOptions.stashName for step: ${stepContext.name}\n"
+    // Check that the name is specified if stashOptions are used
+    if(envVars.containsKey('stashOptions') && !envVars.stashOptions.containsKey('name')) {
+        missingRequired += "Missing required configuration option: stashOptions.name for step: ${stepContext.name}\n"
     }
 
     if (missingRequired) {
