@@ -157,6 +157,7 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
         then:
             1 * getPipelineMock('error')(_) >> { args ->
                 def lines = args[0].split('\n')
+                assert 2 == lines.size()
                 assert 'Missing required configuration option: stageName for step: build' == lines[0]
                 assert 'Missing required configuration option: buildContainer for step: build' == lines[1]
             }
@@ -178,6 +179,7 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
         then:
             1 * getPipelineMock('error')(_) >> { args ->
                 def lines = args[0].split('\n')
+                assert 1 == lines.size()
                 assert 'Missing required configuration option: stashOptions.stashName for step: build' == lines[0]
             }
     }    
