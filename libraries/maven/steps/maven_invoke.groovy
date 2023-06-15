@@ -70,11 +70,9 @@ void call(app_env = [:]) {
 /**
  * Method executed if there are stash options specified.
  * Will build the 'stash' command and execute it, throwing any exceptions that occur.
- * The name field is required if any options are used and must be set to stashName
- * due to 'name' being a reserved word.  The other options and default values are set 
- * based on the Jenkins 'stash' documentation.
+ * The options and default values are set based on the Jenkins 'stash' documentation.
  * 
- * @param stashOptions the stash options specified in the pipeline configuration.
+ * @param stashOptions the stash options specified in the pipeline configuration
  */
 void runStashCommand(stashOptions) {
     if(stashOptions) {
