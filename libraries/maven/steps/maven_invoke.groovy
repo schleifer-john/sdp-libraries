@@ -70,7 +70,7 @@ void call(app_env = [:]) {
 /**
  * Method executed if there are stash options specified.
  * Will build the 'stash' command and execute it, throwing any exceptions that occur.
- * The name field is required if any options are used and must be set to workspaceName
+ * The name field is required if any options are used and must be set to stashName
  * due to 'name' being a reserved word.  The other options and default values are set 
  * based on the Jenkins 'stash' documentation.
  * 
@@ -79,15 +79,17 @@ void call(app_env = [:]) {
 void runStashCommand(stashOptions) {
     if(stashOptions) {
         try {
-            def workspaceName = stashOptions.workspaceName
-            def allowEmpty = stashOptions.allowEmpty ?: false
+            def stashName = stashOptions.stashName
             def excludes = stashOptions.excludes ?: ''
             def includes = stashOptions.includes ?: ''
-            def useDefaultExcludes = stashOptions.useDefaultExcludes ?: true
 
-            println ("Executing command [stash name: ${stashOptions.workspaceName}, allowEmpty: ${allowEmpty}, excludes: ${excludes}, "
+            // Need to use containsKey checks for the boolean values
+            def allowEmpty = stashOptions.containsKey('allowEmpty') ? stashOptions.allowEmpty : false
+            def useDefaultExcludes = stashOptions.containsKey('useDefaultExcludes') ? stashOptions.useDefaultExcludes : true
+
+            println ("Executing command [stash name: ${stashOptions.stashName}, allowEmpty: ${allowEmpty}, excludes: ${excludes}, "
                 + "includes: ${includes}, useDefaultExcludes: ${useDefaultExcludes}]")
-            stash (name: stashOptions.workspaceName, allowEmpty: allowEmpty, excludes: excludes, includes: includes, 
+            stash (name: stashName, allowEmpty: allowEmpty, excludes: excludes, includes: includes, 
                 useDefaultExcludes: useDefaultExcludes)
         }
         catch (any) {
@@ -149,8 +151,10 @@ void setEnvVars(libStepConfig, appStepConfig) {
     LinkedHashMap appEnv = appStepConfig?.findAll { it.key != 'secrets' } ?: [:]
     LinkedHashMap envVars = libEnv + appEnv
 
+    println "envVars"
     envVars.each {
         env[it.key] = it.value
+        println "$it.key: $it.value"
     }
 
     // Checking to make sure required fields are present (may be redundant once a library_config.groovy is added)
@@ -162,9 +166,9 @@ void setEnvVars(libStepConfig, appStepConfig) {
         }
     }
 
-    // Check that the workspaceName is specified if stashOptions are used
-    if(envVars.containsKey('stashOptions') && !envVars.stashOptions.containsKey('workspaceName')) {
-        missingRequired += "Missing required configuration option: stashOptions.workspaceName for step: ${stepContext.name}\n"
+    // Check that the stashName is specified if stashOptions are used
+    if(envVars.containsKey('stashOptions') && !envVars.stashOptions.containsKey('stashName')) {
+        missingRequired += "Missing required configuration option: stashOptions.stashName for step: ${stepContext.name}\n"
     }
 
     if (missingRequired) {

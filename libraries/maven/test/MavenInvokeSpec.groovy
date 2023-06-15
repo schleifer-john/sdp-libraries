@@ -28,7 +28,12 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
 
         MavenInvoke = loadPipelineScriptForStep('maven', 'maven_invoke')
 
+        // Redirect to System.out for troubleshooting purposes
+        MavenInvoke.getBinding().setProperty('out', System.out)
+        // otherwise mock to prevent println errors
+        //explicitlyMockPipelineVariable('out')
         explicitlyMockPipelineStep('inside_sdp_image')
+        
 
         MavenInvoke.getBinding().setVariable('config', config)
         MavenInvoke.getBinding().setVariable('env', env)
@@ -37,7 +42,6 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
 
     def 'Completes a mvn test successfully' () {
         setup:
-            getPipelineMock('sh')('mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false && cd my-app')
             MavenInvoke.getBinding().setVariable('config', minimalUnitTestingConfig)
         when:
             MavenInvoke()
@@ -73,7 +77,6 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
 
     def 'Artifacts get archived as expected' () {
         setup:
-            getPipelineMock('sh')('mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false && cd my-app')
             MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
             MavenInvoke.getBinding().setVariable('config', [
                 build: [
@@ -88,4 +91,62 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
         then:
             1 * getPipelineMock('archiveArtifacts.call')(_ as Map)
     }
+
+    def 'Stash command runs with correct required and default values when minimal stashOptions are specified' () {
+        setup:
+            MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
+        when:
+            MavenInvoke([
+                maven: [
+                    build: [
+                        stageName: 'Maven Build',
+                        buildContainer: 'mvn',
+                        phases: ['clean', 'install'],
+                        stashOptions: [
+                            stashName: 'test-stash'
+                        ]
+                    ]
+                ]
+            ])
+        then:
+            println "arguments"
+            1 * getPipelineMock('stash')(_) >> { args ->
+                assert 'test-stash' == args[0].name
+                assert false == args[0].allowEmpty
+                assert '' == args[0].excludes
+                assert '' == args[0].includes
+                assert true == args[0].useDefaultExcludes
+            }
+    }
+
+    def 'Stash command runs when stashOptions are specified' () {
+        setup:
+            MavenInvoke.getBinding().setVariable('stepContext', [name: 'build'])
+        when:
+            MavenInvoke([
+                maven: [
+                    build: [
+                        stageName: 'Maven Build',
+                        buildContainer: 'mvn',
+                        phases: ['clean', 'install'],
+                        stashOptions: [
+                            stashName: 'test-stash',
+                            allowEmpty: true,
+                            excludes: 'src/test',
+                            includes: 'src/main',
+                            useDefaultExcludes: false
+                        ]
+                    ]
+                ]
+            ])
+        then:
+            println "arguments"
+            1 * getPipelineMock('stash')(_) >> { args ->
+                assert 'test-stash' == args[0].name
+                assert true == args[0].allowEmpty
+                assert 'src/test' == args[0].excludes
+                assert 'src/main' == args[0].includes
+                assert false == args[0].useDefaultExcludes
+            }
+    }    
 }
