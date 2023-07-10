@@ -9,17 +9,24 @@ Jfrog Artifactory is a Universal Repository manager that allows organizations to
 Steps
 =====
 
-.. csv-table::
-   :header: "Step", "Description"
-
-   "download()", "This command is used to download files from Artifactory"
-   "upload()", "Specifies the URL that tenant will be used to access Artifactory"
+download()
+==========
+This command is used to download files from Artifactory
 
 .. csv-table:: Download Arguments
    :header: "Step", "Description"
 
    "download()", "This command is used to download files from Artifactory"
    "upload()", "Specifies the URL that tenant will be used to access Artifactory"
+
+Example Usage Snippet
+
+Downloads the `sample/artifact.zip` file in the `SAMPLE-REPO` in Artifactory to a local folder named `libraries`.
+The flat argument is set to `true`, so the downloaded file path will be `libraries/artifact.zip`.  If set to `false`, the path will be `libraries/sample/artifact.zip` instead.
+
+.. code:: groovy
+
+   download("SAMPLE-REPO/sample/artifact.zip", "libraries", true)
 
 
 Library Configuration Options
