@@ -8,16 +8,21 @@ Jfrog Artifactory is a Universal Repository manager that allows organizations to
 
 Steps
 =====
+* download(pattern, target, flat)
+* upload()
 
-download()
+Please refer to the official Jfrog Jenkins Artifactory documentation on downloading and uploading files for more information and examples: https://jfrog.com/help/r/jfrog-integrations-documentation/uploading-and-downloading-files
+
+download(pattern, target, flat)
 ==========
 This command is used to download files from Artifactory
 
 .. csv-table:: Download Arguments
-   :header: "Step", "Description"
+   :header: "Argument", "Description"
 
-   "download()", "This command is used to download files from Artifactory"
-   "upload()", "Specifies the URL that tenant will be used to access Artifactory"
+   "pattern", "The pattern of files to download from Artifactory."
+   "target", "The target local directory where the files will be downloaded to."
+   "flat", "If true, artifacts are downloaded to the exact target path specified and their hierarchy in the source repository is ignored. If false, artifacts are downloaded to the target path in the file system while maintaining their hierarchy in the source repository."
 
 Example Usage Snippet
 
