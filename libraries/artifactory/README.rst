@@ -26,8 +26,8 @@ This command is used to download files from Artifactory
 
 Example Usage Snippet
 
-Downloads the `sample/artifact.zip` file in the `SAMPLE-REPO` in Artifactory to a local folder named `libraries`.
-The flat argument is set to `true`, so the downloaded file path will be `libraries/artifact.zip`.  If set to `false`, the path will be `libraries/sample/artifact.zip` instead.
+Downloads the sample/artifact.zip file in the SAMPLE-REPO in Artifactory to a local folder named libraries.
+The flat argument is set to true, so the downloaded file path will be libraries/artifact.zip.  If set to false, the path will be libraries/sample/artifact.zip instead.
 
 .. code:: groovy
 
