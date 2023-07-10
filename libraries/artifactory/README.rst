@@ -6,10 +6,20 @@ Artifactory
 
 Jfrog Artifactory is a Universal Repository manager that allows organizations to securely store and retrieve artifacts. It provides access control of those artifacts, and offers High-Availability, multiple push replications, and tags library with searchable metadata.
 
-Steps Contributed
-=================
-* download()
-* upload()
+Steps
+=====
+
+.. csv-table::
+   :header: "Step", "Description"
+
+   "download()", "This command is used to download files from Artifactory"
+   "upload()", "Specifies the URL that tenant will be used to access Artifactory"
+
+.. csv-table:: Download Arguments
+   :header: "Step", "Description"
+
+   "download()", "This command is used to download files from Artifactory"
+   "upload()", "Specifies the URL that tenant will be used to access Artifactory"
 
 
 Library Configuration Options
