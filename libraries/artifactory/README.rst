@@ -43,6 +43,7 @@ Library Configuration Options
 
    "creds_id", "A new credential can be used", "artifactory-creds"
    "url", "Specifies the URL that tenant will be used to access Artifactory", "https://artifactory.helix.gsa.gov/artifactory"
+   "stashOptions", "Optional field that can be used to stash the results.  See Example Stash Options Configuration Snippet below.", "The name must be set if used.  allowEmpty = false, includes='', excludes='', useDefaultExcludes = true"
 
 
 Example Configuration Snippet
@@ -53,6 +54,23 @@ Example Configuration Snippet
     artifactory {
         url = "https://artifactory.helix.gsa.gov/artifactory"
         creds_id = "artifactory-creds"
+    }
+
+Example Stash Options Configuration Snippet
+=============================
+
+.. code:: groovy
+
+    artifactory {
+        url = "https://artifactory.helix.gsa.gov/artifactory"
+        creds_id = "artifactory-creds"
+        stashOptions {
+            name = "workspace"
+            allowEmpty = true
+            excludes = 'src',
+            includes = 'dist',
+            useDefaultExcludes = false
+        }
     }
 
 Artifactory Configurations
