@@ -3,6 +3,7 @@ package libraries.artifactory.steps
 void call(pattern,target,flat){
 
     def stashOptions = config?.stashOptions ?: [] as String[]
+    validateConfig(config)
 
     node ("agent") {
         def server = Artifactory.newServer url: config.url, credentialsId: config.creds_id
@@ -48,5 +49,26 @@ void runStashCommand(stashOptions) {
         catch (any) {
             throw any
         }
+    }
+}
+
+void validateConfig(config) {
+
+    // Checking to make sure required fields are present (may be redundant once a library_config.groovy is added)
+    ArrayList requiredFields = ['url', 'creds_id']
+    String missingRequired = ''
+    requiredFields.each { field ->
+        if (!config.containsKey(field)) {
+            missingRequired += "Missing required configuration option: ${field} for the Artifactory download step\n"
+        }
+    }
+
+    // Check that the name is specified if stashOptions are used
+    if(config.containsKey('stashOptions') && !config.stashOptions.containsKey('name')) {
+        missingRequired += "Missing required configuration option: stashOptions.name for the Artifactory download step\n"
+    }
+
+    if (missingRequired) {
+        error missingRequired
     }
 }

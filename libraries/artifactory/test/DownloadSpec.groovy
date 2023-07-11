@@ -25,7 +25,7 @@ public class DownloadSpec extends JTEPipelineSpecification {
         1 * getPipelineMock("Artifactory.newServer")(_) >> { return ArtifactoryServer }
     }
 
-    def 'download request is properly formed' () {
+    def 'Download request is properly formed' () {
         setup:
             // define the expected result and a placeholder for the actual result
             def expectedDownloadSpec = """{
@@ -89,6 +89,37 @@ public class DownloadSpec extends JTEPipelineSpecification {
                 assert 'src/test' == args[0].excludes
                 assert 'src/main' == args[0].includes
                 assert false == args[0].useDefaultExcludes
+            }
+    }
+
+    def 'Verify validation check works if required fields are missing' () {
+        setup:
+            Download.getBinding().setVariable('config', [:])
+        when:
+            Download("SAMPLE-REPO/sample/artifact.zip", "libraries", true)
+        then:
+            1 * getPipelineMock('error')(_) >> { args ->
+                def lines = args[0].split('\n')
+                assert 2 == lines.size()
+                assert 'Missing required configuration option: url for the Artifactory download step' == lines[0]
+                assert 'Missing required configuration option: creds_id for the Artifactory download step' == lines[1]
+            }
+    }
+
+    def 'Verify validation check works if stashOptions is missing the required name' () {
+        setup:
+            Download.getBinding().setVariable('config', [
+                url: 'test-url', 
+                creds_id: 'test-id',
+                stashOptions: [:]
+            ])
+        when:
+            Download("SAMPLE-REPO/sample/artifact.zip", "libraries", true)
+        then:
+            1 * getPipelineMock('error')(_) >> { args ->
+                def lines = args[0].split('\n')
+                assert 1 == lines.size()
+                assert 'Missing required configuration option: stashOptions.name for the Artifactory download step' == lines[0]
             }
     }
 }
