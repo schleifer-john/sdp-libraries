@@ -6,6 +6,8 @@ void call(pattern,target,flat){
     validateConfig(config)
 
     node ("agent") {
+    	unstash 'workspace'
+
         def server = Artifactory.newServer url: config.url, credentialsId: config.creds_id
 
         def downloadSpec = """{

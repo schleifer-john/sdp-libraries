@@ -25,6 +25,15 @@ public class DownloadSpec extends JTEPipelineSpecification {
         1 * getPipelineMock("Artifactory.newServer")(_) >> { return ArtifactoryServer }
     }
 
+    def 'Unstash workspace is called' () {
+        when:
+            Download("SAMPLE-REPO/sample/artifact.zip", "libraries", true)
+        then:
+            1 * getPipelineMock('unstash')(_) >> { args ->
+                assert 'workspace' == args[0]
+            }
+    }
+
     def 'Download request is properly formed' () {
         setup:
             // define the expected result and a placeholder for the actual result
