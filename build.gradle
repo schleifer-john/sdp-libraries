@@ -90,7 +90,7 @@ dependencies {
 test{
   testLogging{
     showStandardStreams = true
-  }  
+  }
   jacoco{
     classDumpDir = file("$buildDir/jacoco/classpathdumps")
   }

@@ -1,10 +1,10 @@
 ---
-description: This library allows you to perform Maven commands in a defined build agent container
+description: This library allows you to perform Maven commands in an internal build agent container
 ---
 
 # Maven
 
-This library allows you to perform Maven commands in a defined build agent container.
+This library allows you to perform Maven commands in an internal build agent container.
 
 ## Steps
 
@@ -19,7 +19,6 @@ libraries {
   maven {
     myMavenStep {
       stageName = 'Initial Maven Lifecycle'
-      buildContainer = 'mvn:3.8.5-openjdk-11'
       phases = ['clean', 'validate']
       goals = ['compiler:testCompile']
       options = ['-q']
@@ -37,20 +36,26 @@ libraries {
         }
       }
     }
-    anotherMavenStep {
+    myMavenStepUsingArtifacts {
       stageName = 'Maven Build'
-      buildContainer = 'mvn'
       phases = ['build']
       artifacts = ['target/*.jar']
     }
+    myMavenStepUsingStashOptions {
+      stageName = 'Maven Build'
+      phases = ['build']
+      stashOptions {
+        name = "workspace"
+        allowEmpty = true
+      }
+    }    
   }
 }
 ```
 
 ## Dependencies
 
-* The `sdp` library
-* Access to an appropriate Maven build agent container via the repository defined in your `sdp` library configuration
+* The Jenkins Maven Plugin
 
 ## Migrating to 4.0
 
@@ -68,7 +73,6 @@ To recreate the previous `maven.run()` functionality of prior versions, the belo
       maven {
         build {
           stageName = "Maven Build"
-          buildContainer = 'mvn'
           phases = ['clean', 'install']
           options = ['-P integration-test']
         }

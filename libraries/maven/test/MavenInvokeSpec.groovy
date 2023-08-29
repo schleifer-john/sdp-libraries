@@ -32,7 +32,7 @@ public class MavenInvokeSpec extends JTEPipelineSpecification {
         MavenInvoke.getBinding().setProperty('out', System.out)
         // otherwise mock to prevent println errors
         //explicitlyMockPipelineVariable('out')
-        explicitlyMockPipelineStep('inside_sdp_image')
+        explicitlyMockPipelineStep('')
         
 
         MavenInvoke.getBinding().setVariable('config', config)

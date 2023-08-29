@@ -41,26 +41,28 @@ void call(app_env = [:]) {
 
         // run maven command in specified container
         withCredentials(creds) {
-            inside_sdp_image "${env.buildContainer}", {
-                unstash 'workspace'
+            node("agent") {
+                container("maven") {
+                    unstash 'workspace'
 
-                String command = 'mvn '
-                options.each { value -> command += "${value} " }
-                goals.each { value -> command += "${value} " }
-                phases.each { value -> command += "${value} " }
+                    String command = 'mvn '
+                    options.each { value -> command += "${value} " }
+                    goals.each { value -> command += "${value} " }
+                    phases.each { value -> command += "${value} " }
 
-                try {
-                    sh command
-                }
-                catch (any) {
-                    throw any
-                }
-                finally {
-                    artifacts.each { artifact ->
-                        archiveArtifacts artifacts: artifact, allowEmptyArchive: true
+                    try {
+                        sh command
                     }
+                    catch (any) {
+                        throw any
+                    }
+                    finally {
+                        artifacts.each { artifact ->
+                            archiveArtifacts artifacts: artifact, allowEmptyArchive: true
+                        }
 
-                    runStashCommand(stashOptions)
+                        runStashCommand(stashOptions)
+                    }
                 }
             }
         }
@@ -154,7 +156,7 @@ void setEnvVars(libStepConfig, appStepConfig) {
     }
 
     // Checking to make sure required fields are present (may be redundant once a library_config.groovy is added)
-    ArrayList requiredFields = ['stageName', 'buildContainer']
+    ArrayList requiredFields = ['stageName']
     String missingRequired = ''
     requiredFields.each { field ->
         if (!envVars.containsKey(field)) {

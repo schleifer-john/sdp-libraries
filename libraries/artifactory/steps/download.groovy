@@ -1,7 +1,6 @@
 package libraries.artifactory.steps
 
 void call(pattern,target,flat){
-
     def stashOptions = config?.stashOptions ?: [] as String[]
     validateConfig(config)
 
@@ -10,17 +9,19 @@ void call(pattern,target,flat){
 
         def server = Artifactory.newServer url: config.url, credentialsId: config.creds_id
 
+        // default the target path to the current working directory if unspecified
+        def targetPath = target ? "${pwd()}/${target}" : "${pwd()}"
+
         def downloadSpec = """{
             "files": [
                 {
                     "pattern": "${pattern}",
-                    "target": "${pwd()}/${target}",
+                    "target": "${targetPath}",
                     "flat": "${flat}"
                 }
             ]
         }"""
         server.download(downloadSpec)
-
         runStashCommand(stashOptions);
     }
 }
