@@ -6,6 +6,9 @@
 package libraries.git.steps
 
 void call(Map args = [:], body){
+  println "on_merge running"
+  println "args.to : ${args.to}"
+  println "args.from : ${args.from}"
 
   // do nothing if not merge
   if (!env.GIT_BUILD_CAUSE.equals("merge"))
@@ -13,18 +16,28 @@ void call(Map args = [:], body){
 
   env.FEATURE_SHA = get_feature_branch_sha()
 
+  println "env.GIT_BUILD_CAUSE : ${env.GIT_BUILD_CAUSE}"
+  println "env.FEATURE_SHA : ${env.FEATURE_SHA}"
+
   def source_branch = get_merged_from()
   def target_branch = env.BRANCH_NAME
 
+  println "source_branch : ${source_branch}"
+  println "target_branch : ${target_branch}"
+
   // do nothing if source branch doesn't match
   if (args.from)
-  if (!source_branch.collect{ it ==~ args.from}.contains(true))
+  if (!source_branch.collect{ it ==~ args.from}.contains(true)){
+    println "do nothing, source branch doesn't match"
     return
+  }
 
   // do nothing if target branch doesnt match
   if (args.to)
-  if (!(target_branch ==~ args.to))
+  if (!(target_branch ==~ args.to)){
+    println "do nothing, target branch doesn't match"
     return
+  }
 
   def mergedFrom = source_branch.join(", ")
   // grammar essentially, remove oxford comma to follow git syntax
@@ -35,51 +48,4 @@ void call(Map args = [:], body){
 
   println "running because of a merge from ${mergedFrom} to ${target_branch}"
   body()
-}
-
-String get_merged_from(){
-  node{
-    unstash "workspace"
-    // update remote for git name-rev to properly work
-    def remote = env.GIT_URL
-    def cred_id = env.GIT_CREDENTIAL_ID
-    withCredentials([usernamePassword(credentialsId: cred_id, passwordVariable: 'PASS', usernameVariable: 'USER')]){
-        remote = remote.replaceFirst("://", "://${USER}:${PASS}@")
-        sh "git remote rm origin"
-        sh "git remote add origin ${remote}"
-        sh "git fetch --all > /dev/null 2>&1"
-    }
-    // list all shas, but trim the first two shas
-    // the first sha is the current commit
-    // the second sha is the current commit's parent
-    def sourceShas = sh(
-      script: "git rev-list HEAD --parents -1",
-      returnStdout: true
-    ).trim().split(" ")[2..-1]
-    def branchNames = []
-    // loop through all shas and attempt to turn them into branch names
-    for(sha in sourceShas) {
-      def branch = sh(
-        script: "git name-rev --name-only " + sha,
-        returnStdout: true
-      ).replaceFirst("remotes/origin/", "").trim()
-      // trim the ~<number> off branch names which means commits back
-      // e.g. master~4 means 4 commits ago on master
-      if(branch.contains("~"))
-        branch = branch.substring(0, branch.lastIndexOf("~"))
-      if(!branch.contains("^"))
-        branchNames.add(branch)
-    }
-    return branchNames
-  }
-}
-
-String get_feature_branch_sha(){
-  node{
-    unstash "workspace"
-    sh(
-      script: "git rev-parse \$(git --no-pager log -n1 | grep Merge: | awk '{print \$3}')",
-      returnStdout: true
-     ).trim()
-  }
 }
